@@ -149,9 +149,9 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
         () -> {
           try {
             Tasks.await(FirebaseMessaging.getInstance().deleteToken());
-            taskCompletionSource.setResult(null);
+            taskCompletionSource.trySetResult(null);
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -165,14 +165,14 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
         () -> {
           try {
             String token = Tasks.await(FirebaseMessaging.getInstance().getToken());
-            taskCompletionSource.setResult(
+            taskCompletionSource.trySetResult(
                 new HashMap<String, Object>() {
                   {
                     put("token", token);
                   }
                 });
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -189,9 +189,9 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                 FlutterFirebaseMessagingUtils.getFirebaseMessagingForArguments(arguments);
             String topic = (String) Objects.requireNonNull(arguments.get("topic"));
             Tasks.await(firebaseMessaging.subscribeToTopic(topic));
-            taskCompletionSource.setResult(null);
+            taskCompletionSource.trySetResult(null);
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -208,9 +208,9 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                 FlutterFirebaseMessagingUtils.getFirebaseMessagingForArguments(arguments);
             String topic = (String) Objects.requireNonNull(arguments.get("topic"));
             Tasks.await(firebaseMessaging.unsubscribeFromTopic(topic));
-            taskCompletionSource.setResult(null);
+            taskCompletionSource.trySetResult(null);
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -228,9 +228,9 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
             RemoteMessage remoteMessage =
                 FlutterFirebaseMessagingUtils.getRemoteMessageForArguments(arguments);
             firebaseMessaging.send(remoteMessage);
-            taskCompletionSource.setResult(null);
+            taskCompletionSource.trySetResult(null);
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -247,7 +247,7 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                 FlutterFirebaseMessagingUtils.getFirebaseMessagingForArguments(arguments);
             Boolean enabled = (Boolean) Objects.requireNonNull(arguments.get("enabled"));
             firebaseMessaging.setAutoInitEnabled(enabled);
-            taskCompletionSource.setResult(
+            taskCompletionSource.trySetResult(
                 new HashMap<String, Object>() {
                   {
                     put(
@@ -256,7 +256,7 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                   }
                 });
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -273,9 +273,9 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                 FlutterFirebaseMessagingUtils.getFirebaseMessagingForArguments(arguments);
             Boolean enabled = (Boolean) Objects.requireNonNull(arguments.get("enabled"));
             firebaseMessaging.setDeliveryMetricsExportToBigQuery(enabled);
-            taskCompletionSource.setResult(null);
+            taskCompletionSource.trySetResult(null);
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -294,21 +294,21 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
               if (initialMessageNotification != null) {
                 remoteMessageMap.put("notification", initialMessageNotification);
               }
-              taskCompletionSource.setResult(remoteMessageMap);
+              taskCompletionSource.trySetResult(remoteMessageMap);
               initialMessage = null;
               initialMessageNotification = null;
               return;
             }
 
             if (mainActivity == null) {
-              taskCompletionSource.setResult(null);
+              taskCompletionSource.trySetResult(null);
               return;
             }
 
             Intent intent = mainActivity.getIntent();
 
             if (intent == null || intent.getExtras() == null) {
-              taskCompletionSource.setResult(null);
+              taskCompletionSource.trySetResult(null);
               return;
             }
 
@@ -318,7 +318,7 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
 
             // We only want to handle non-consumed initial messages.
             if (messageId == null || consumedInitialMessages.get(messageId) != null) {
-              taskCompletionSource.setResult(null);
+              taskCompletionSource.trySetResult(null);
               return;
             }
 
@@ -343,7 +343,7 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
             }
 
             if (remoteMessage == null) {
-              taskCompletionSource.setResult(null);
+              taskCompletionSource.trySetResult(null);
               return;
             }
 
@@ -357,10 +357,10 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
               remoteMessageMap.put("notification", notificationMap);
             }
 
-            taskCompletionSource.setResult(remoteMessageMap);
+            taskCompletionSource.trySetResult(remoteMessageMap);
 
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -381,18 +381,18 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                   mainActivity,
                   (notificationsEnabled) -> {
                     permissions.put("authorizationStatus", notificationsEnabled);
-                    taskCompletionSource.setResult(permissions);
+                    taskCompletionSource.trySetResult(permissions);
                   },
                   (String errorDescription) -> {
-                    taskCompletionSource.setException(new Exception(errorDescription));
+                    taskCompletionSource.trySetException(new Exception(errorDescription));
                   });
             } else {
               permissions.put("authorizationStatus", 1);
-              taskCompletionSource.setResult(permissions);
+              taskCompletionSource.trySetResult(permissions);
             }
 
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -421,9 +421,9 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
                   NotificationManagerCompat.from(mainActivity).areNotificationsEnabled();
               permissions.put("authorizationStatus", areNotificationsEnabled ? 1 : 0);
             }
-            taskCompletionSource.setResult(permissions);
+            taskCompletionSource.trySetResult(permissions);
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -605,10 +605,10 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
               FirebaseMessaging firebaseMessaging = FirebaseMessaging.getInstance();
               constants.put("AUTO_INIT_ENABLED", firebaseMessaging.isAutoInitEnabled());
             }
-            taskCompletionSource.setResult(constants);
+            taskCompletionSource.trySetResult(constants);
 
           } catch (Exception e) {
-            taskCompletionSource.setException(e);
+            taskCompletionSource.trySetException(e);
           }
         });
 
@@ -619,7 +619,7 @@ public class FlutterFirebaseMessagingPlugin extends BroadcastReceiver
   public Task<Void> didReinitializeFirebaseCore() {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
 
-    cachedThreadPool.execute(() -> taskCompletionSource.setResult(null));
+    cachedThreadPool.execute(() -> taskCompletionSource.trySetResult(null));
 
     return taskCompletionSource.getTask();
   }
